@@ -13,6 +13,10 @@ jobs:
         with:
           flutter-version: '3.19.6'
           channel: 'stable'
+      - name: Create lib directory and move main.dart
+        run: |
+          mkdir -p lib
+          if [ -f main.dart ]; then mv main.dart lib/; fi
       - run: flutter pub get
       - run: flutter build apk --release
       - uses: actions/upload-artifact@v4
