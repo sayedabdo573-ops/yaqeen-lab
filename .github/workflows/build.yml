@@ -13,19 +13,19 @@ jobs:
         with:
           flutter-version: '3.19.6'
           channel: 'stable'
-      - name: Setup project structure
+      - name: Create complete Flutter project structure
         run: |
-          mkdir -p lib
-          if [ -f main.dart ]; then
-            cp main.dart lib/main.dart
-          fi
-          if [ ! -f pubspec.yaml ]; then
-            echo "name: yaqeen_lab" > pubspec.yaml
-            echo "environment:" >> pubspec.yaml
-            echo "  sdk: '>=3.0.0 <4.0.0'" >> pubspec.yaml
-            echo "dependencies:" >> pubspec.yaml
-            echo "  flutter:" >> pubspec.yaml
-            echo "    sdk: flutter" >> pubspec.yaml
+          # الاحتفاظ بملف الـ main.dart الخاص بك في مكان آمن مؤقتاً
+          mkdir -p temp_dir
+          if [ -f main.dart ]; then cp main.dart temp_dir/; fi
+          if [ -f lib/main.dart ]; then cp lib/main.dart temp_dir/; fi
+          
+          # إنشاء مشروع فلاتر كامل ونظيف بالهيكل المطلوب للـ Gradle
+          flutter create . --org com.yaqeen.lab --project-name yaqeen_lab --force
+          
+          # استعادة الكود الخاص بك في مكانه الصحيح داخل المشروع الجديد
+          if [ -f temp_dir/main.dart ]; then
+            cp temp_dir/main.dart lib/main.dart
           fi
       - run: flutter pub get
       - run: flutter build apk --release
