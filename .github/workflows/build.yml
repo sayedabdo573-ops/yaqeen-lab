@@ -13,26 +13,23 @@ jobs:
         with:
           flutter-version: '3.19.6'
           channel: 'stable'
-      - name: Generate clean Flutter project structure
+      - name: Generate Project and Fix Gradle
         run: |
-          # حفظ ملف الـ main.dart في مكان خارجي مؤقتاً
           if [ -f main.dart ]; then cp main.dart /tmp/main.dart; fi
           if [ -f lib/main.dart ]; then cp lib/main.dart /tmp/main.dart; fi
-          
-          # إزالة الملفات الجذرية المؤقتة لتنظيف مجلد العمل
           rm -f main.dart pubspec.yaml
-          
-          # إنشاء مشروع فلاتر جديد نظيف بالكامل في مجلد مؤقت
           flutter create temp_project --org com.yaqeen.lab --project-name yaqeen_lab --platforms=android
-          
-          # نقل محتويات المشروع الجديد إلى المجلد الرئيسي بحذر
           shopt -s dotglob
           mv temp_project/* .
           rmdir temp_project
-          
-          # استعادة كود الـ main.dart الخاص بك
           if [ -f /tmp/main.dart ]; then
             cp /tmp/main.dart lib/main.dart
+          fi
+          
+          # تعديل إصدار الـ Gradle ليتوافق تماماً مع بيئة الخادم الحالية
+          if [ -f android/gradle/wrapper/gradle-wrapper.properties ]; then
+            sed -i 's/gradle-7.5-bin.zip/gradle-8.3-bin.zip/g' android/gradle/wrapper/gradle-wrapper.properties
+            sed -i 's/gradle-7.6-bin.zip/gradle-8.3-bin.zip/g' android/gradle/wrapper/gradle-wrapper.properties
           fi
       - run: flutter pub get
       - run: flutter build apk --release
