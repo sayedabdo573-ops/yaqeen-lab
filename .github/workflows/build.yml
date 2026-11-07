@@ -13,17 +13,17 @@ jobs:
         with:
           flutter-version: '3.16.5'
           channel: 'stable'
-      - name: Create pubspec and structure
+      - name: Initialize Android Project
         run: |
+          if [ -f main.dart ]; then cp main.dart /tmp/main.dart; fi
+          if [ -f lib/main.dart ]; then cp lib/main.dart /tmp/main.dart; fi
+          rm -rf lib android ios web linux macos windows pubspec.yaml main.dart
+          
+          flutter create . --org com.yaqeen.lab --project-name yaqeen_lab --platforms=android
+          
           mkdir -p lib
-          if [ -f main.dart ]; then cp main.dart lib/main.dart; fi
-          if [ ! -f pubspec.yaml ]; then
-            echo "name: yaqeen_lab" > pubspec.yaml
-            echo "environment:" >> pubspec.yaml
-            echo "  sdk: '>=3.0.0 <4.0.0'" >> pubspec.yaml
-            echo "dependencies:" >> pubspec.yaml
-            echo "  flutter:" >> pubspec.yaml
-            echo "    sdk: flutter" >> pubspec.yaml
+          if [ -f /tmp/main.dart ]; then
+            cp /tmp/main.dart lib/main.dart
           fi
       - run: flutter pub get
       - run: flutter build apk --release
@@ -31,5 +31,3 @@ jobs:
         with:
           name: yaqeen-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-
-  
