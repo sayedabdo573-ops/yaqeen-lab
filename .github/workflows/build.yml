@@ -13,9 +13,23 @@ jobs:
         with:
           flutter-version: '3.16.5'
           channel: 'stable'
+      - name: Create pubspec and structure
+        run: |
+          mkdir -p lib
+          if [ -f main.dart ]; then cp main.dart lib/main.dart; fi
+          if [ ! -f pubspec.yaml ]; then
+            echo "name: yaqeen_lab" > pubspec.yaml
+            echo "environment:" >> pubspec.yaml
+            echo "  sdk: '>=3.0.0 <4.0.0'" >> pubspec.yaml
+            echo "dependencies:" >> pubspec.yaml
+            echo "  flutter:" >> pubspec.yaml
+            echo "    sdk: flutter" >> pubspec.yaml
+          fi
       - run: flutter pub get
-      - run: flutter build apk --release --no-pub
+      - run: flutter build apk --release
       - uses: actions/upload-artifact@v4
         with:
           name: yaqeen-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+
+  
