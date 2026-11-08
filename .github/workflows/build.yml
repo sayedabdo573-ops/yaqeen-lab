@@ -13,7 +13,7 @@ jobs:
         with:
           flutter-version: '3.16.5'
           channel: 'stable'
-      - name: Initialize Android Project
+      - name: Initialize and Fix Gradle Version
         run: |
           if [ -f main.dart ]; then cp main.dart /tmp/main.dart; fi
           if [ -f lib/main.dart ]; then cp lib/main.dart /tmp/main.dart; fi
@@ -24,6 +24,11 @@ jobs:
           mkdir -p lib
           if [ -f /tmp/main.dart ]; then
             cp /tmp/main.dart lib/main.dart
+          fi
+          
+          # رفع إصدار الـ Gradle ليتوافق مع الجافا الحديثة على الخادم
+          if [ -f android/gradle/wrapper/gradle-wrapper.properties ]; then
+            sed -i 's/distributionUrl=.*\/gradle-.*-bin.zip/distributionUrl=https\:\/\/services.gradle.org\/distributions\/gradle-8.5-bin.zip/g' android/gradle/wrapper/gradle-wrapper.properties
           fi
       - run: flutter pub get
       - run: flutter build apk --release
